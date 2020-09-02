@@ -25,18 +25,18 @@ class IslandOne():
     """
     Calculates the radius to the centerline of the torus.
     """
-    def Rl(self, i, k):
-        phi = self.phi_l(1, i, k)
+    def Rl(self, l, i, k):
+        phi = self.phi_l(l, i, k)
 
         return (self.R * cos(phi), self.R * sin(phi), 0)
     
     """
     Calculates the radius of the torus pressure tube.
     """
-    def rl(self, i, k):
+    def rl(self, l, i, k):
         # Get the angles of the R and r radii
-        phi = self.phi_l(1, i, k)
-        theta = self.theta_l(1, i, k)
+        phi = self.phi_l(l, i, k)
+        theta = self.theta_l(l, i, k)
         
         return (self.r * cos(theta) * cos(phi),
                 self.r * cos(theta) * sin(phi),
@@ -81,13 +81,15 @@ class IslandOne():
         show_object(person, options={"alpha":0.0, "color": (37, 29, 22)})
         show_object(person2, options={"alpha":0.0, "color": (68, 59, 49)})
         
-        # Draw all the n1 nodes
-        for i in range(0, self.q_units):
-            for k in range(0, self.p_units):
-                # Add the components of both radius vectors
-                radii_tuple = tuple(map(sum, zip(self.Rl(i, k), self.rl(i, k))))
+        # Draw all the n1 and n2 nodes
+        for l in range(1, 3):
+            # Step through all the q and p units and place the nodes for them
+            for i in range(0, self.q_units):
+                for k in range(0, self.p_units):
+                    # Add the components of both radius vectors
+                    radii_tuple = tuple(map(sum, zip(self.Rl(l, i, k), self.rl(l, i, k))))
 
-                show_object(self.node(radii_tuple), options={"alpha":0.5, "color": (255, 255, 255)})
+                    show_object(self.node(radii_tuple), options={"alpha":0.5, "color": (255, 255, 255)})
 
 # Trigger the build and render
 IslandOne().build()
