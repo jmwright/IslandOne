@@ -44,9 +44,8 @@ T4 = np.concatenate( (zMat, e1, np.negative(e1), zMat, zMat, e1, e1, zMat) ) # C
 """
 Returns a reference representation of a connectivity node.
 """
-def node(pos):
-    print(pos)
-    return cq.Workplane("XY").box(node_r, node_r, node_r).translate((pos[0][0], pos[1][0], pos[1][0]))
+def node(pos, l):
+    return cq.Workplane("XY").box(node_r, node_r, node_r).translate((pos[0][l - 1], pos[1][l - 1], pos[2][l - 1]))
 
 """
 Returns a 3D representation of a bar.
@@ -96,8 +95,8 @@ for i in range(0, q):
     for k in range(0, p):
         # Add the current node
         N_1_2 = N(i, k)
-        assy.add(node(N_1_2[0]), color=cq.Color(1, 1, 1, 0))
-        # assy.add(node(N_1_2[1]), color=cq.Color(1, 1, 1))
+        assy.add(node(N_1_2[0], 1), color=cq.Color(1, 1, 1, 0))
+        assy.add(node(N_1_2[0], 2), color=cq.Color(1, 1, 1, 0))
 
         # Make sure we do not overstep the boundary conditions
         i_adj += 1
