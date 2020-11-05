@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from math import pi, cos, sin
+from math import pi, cos, sin, sqrt
 import cadquery as cq
 import numpy as np
 
@@ -50,8 +50,11 @@ def node(pos, l):
 """
 Returns a 3D representation of a bar.
 """
-def bar(start, end):
-    return cq.Workplane("XY").box(bar_w, bar_h, 0.5).translate(start[0, 0], start[0, 1], start[0, 2])
+def bar(start, end, l):
+    direction = (end[0][l - 1] - start[0][l - 1], end[1][l - 1] - start[1][l - 1], end[2][l - 1] - start[2][l - 1])
+    magnitude = sqrt(direction[0]**2 + direction[1]**2 + direction[2]**2)
+
+    return cq.Workplane(cq.Plane(origin=(start[0][l - 1], start[1][l - 1], start[2][l - 1]), xDir=(1,0,0), normal=direction)).rect(0.1, 0.1).extrude(magnitude)
 
 """
 Given the i, k and l, returns the node vector.
@@ -61,8 +64,8 @@ def N(i, k):
 
     for l in range(1, 3):
         # The angles
-        phil = (2 * i + (l - 1)) * pi / q
-        thetal = (2 * k + l) + pi / p
+        phil = (2 * i + (l - 1)) * (pi / q)
+        thetal = (2 * k + l) * (pi / p)
 
         # The torus radii
         Rl = np.array([R * cos(phil), R * sin(phil), 0])
@@ -86,31 +89,36 @@ torus = (cq.Workplane('YZ')
             .circle(r)
             .circle(r - (r * 0.01))
             .revolve(rev_angle, [R, 0], [R, 1], clean=True))
-assy = cq.Assembly(torus, loc=cq.Location(cq.Vector(0, 0, 0)), color=cq.Color(0.25, 0.64, 0.88, 0.5))
+assy = cq.Assembly(torus, loc=cq.Location(cq.Vector(0, 0, 0)), color=cq.Color(0.25, 0.64, 0.88, 0.2))
 
 # Step through all the q and p units and place the nodes for them
-i_adj = 0
-k_adj = 0
 for i in range(0, q):
     for k in range(0, p):
         # Add the current node
         N_1_2 = N(i, k)
-        assy.add(node(N_1_2[0], 1), color=cq.Color(1, 1, 1, 0))
-        assy.add(node(N_1_2[0], 2), color=cq.Color(1, 1, 1, 0))
+        assy.add(node(N_1_2[0], 1), color=cq.Color(1, 1, 1, 1))
+        assy.add(node(N_1_2[0], 2), color=cq.Color(1, 1, 1, 1))
 
-        # Make sure we do not overstep the boundary conditions
-        i_adj += 1
-        k_adj += 1
-        if i_adj == (q - 1):
+        # Get the indexes of the next and previous strips
+        i_adj = i + 1
+        k_adj = k + 1
+        k_m_adj = k - 1
+
+        # If we have looped around, reset the adjacent i and k indices for the boundary conditions
+        if i_adj > q:
             i_adj = 0
-        if k == (p - 1):
+        if k_adj > p:
             k_adj = 0
+        if k_m_adj < 0:
+            k_m_adj = p - 1
 
         # Find the adjacent bar node connections for the current ik unit
         N_1_2_plus = N(i_adj, k_adj)
+        N_1_2_minus = N(i_adj, k_m_adj)
 
         # Create a bar between the n1 node of the current unit to the n1 node of the i+1,k+1 unit
-        # assy.add(bar(N_1_2[0], N_1_2_plus[0]), color=cq.Color(0, 0, 1))
+        assy.add(bar(N_1_2[0], N_1_2_plus[0], 1), color=cq.Color(0, 0, 1))
+        assy.add(bar(N_1_2[0], N_1_2_minus[0], 2), color=cq.Color(0, 0, 1))
 
 show_object(assy)
             
