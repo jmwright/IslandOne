@@ -2,19 +2,59 @@ from math import sqrt
 import cadquery as cq
 import numpy as np
 from .model.node_matrix import N
+from .tensegrity_bar import Bar
 
 class TensegrityStructure:
+    """
+    Generated tensegrity structure that makes up the skeletal frame of the toroidal
+    pressure hull.
+
+    Attributes
+    ----------
+    p : int
+        Complexity of the torus structure, number of units in the k axis.
+    q : int
+        Complexity of the torus structure, number of units in the i axis.
+    R : float
+        The radius from the center of the station to the center line of the habitat torus.
+    r : float
+        The radius of the pressurized habitat torus.
+    cutaway : bool
+        Whether or not the torus structure should encompass the entire 360 degree envelope.
+        Has no effect currently, but is designed to allow the inside of the torus to be visible.
+    simplified : bool
+        Whether or not to use simplified primitives to decrease generation and rendering time.
+    """
+
     p = None
     q = None
     R = None
     r = None
     node_r = None
-    bar_w = None
-    bar_h = None
     simplified = False
     structure = cq.Assembly()
 
     def __init__(self, p, q, R, r, cutaway=False, simplified=False):
+        """
+        Collects the attributes that allow the tensegrity structure to be built.
+
+        Parameters
+        ----------
+        p : int
+            Complexity of the torus structure, number of units in the k axis.
+        q : int
+            Complexity of the torus structure, number of units in the i axis.
+        R : float
+            The radius from the center of the station to the center line of the habitat torus.
+        r : float
+            The radius of the pressurized habitat torus.
+        cutaway : bool
+            Whether or not the torus structure should encompass the entire 360 degree envelope.
+            Has no effect currently, but is designed to allow the inside of the torus to be visible.
+        simplified : bool
+            Whether or not to use simplified primitives to decrease generation and rendering time.
+        """
+
         self.p = p
         self.q = q
         self.R = R
@@ -22,12 +62,19 @@ class TensegrityStructure:
 
         # Derived sizes for nodes, bars and strings
         self.node_r = r / 50.0 # The radius of the connection nodes
-        self.bar_w = r / 10.0 # The width of a bar 
-        self.bar_h = r / 10.0 # The height of a bar
 
         self.simplified = simplified
 
     def get(self):
+        """
+        Constructs the CadQuery assembly the represents the tensegrity structure of the toroidal  
+        pressure hull.
+
+        Parameters
+        ----------
+        None
+        """
+
         # Step through all the q and p units and place the nodes for them
         for i in range(0, self.q):
             for k in range(0, self.p):
@@ -54,8 +101,8 @@ class TensegrityStructure:
                 N_1_2_minus = N(i_adj, k_m_adj, self.R, self.r, self.p, self.q).get()
 
                 # Create a bar between the n1 node of the current unit to the n1 node of the i+1,k+1 unit
-                self.structure.add(self.bar(N_1_2[0], N_1_2_plus[0], 1), color=cq.Color(0, 0, 1))
-                self.structure.add(self.bar(N_1_2[0], N_1_2_minus[0], 2), color=cq.Color(0, 0, 1))
+                self.structure.add(Bar(N_1_2[0], N_1_2_plus[0], 1, self.r).get(), color=cq.Color(0, 0, 1))
+                self.structure.add(Bar(N_1_2[0], N_1_2_minus[0], 2, self.r).get(), color=cq.Color(0, 0, 1))
 
         return self.structure
 
@@ -71,13 +118,3 @@ class TensegrityStructure:
             new_node = cq.Workplane().sphere(self.node_r)
         
         return new_node.translate((pos[0][l - 1], pos[1][l - 1], pos[2][l - 1]))
-
-    """
-    Returns a 3D representation of a bar.
-    """
-    def bar(self, start, end, l):
-        direction = (end[0][l - 1] - start[0][l - 1], end[1][l - 1] - start[1][l - 1], end[2][l - 1] - start[2][l - 1])
-        magnitude = sqrt(direction[0]**2 + direction[1]**2 + direction[2]**2)
-
-        return cq.Workplane(cq.Plane(origin=(start[0][l - 1], start[1][l - 1], start[2][l - 1]), xDir=(1,0,0), normal=direction)).rect(0.1, 0.1).extrude(magnitude)
-            
