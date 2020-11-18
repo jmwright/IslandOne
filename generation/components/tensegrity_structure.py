@@ -2,6 +2,7 @@ from math import sqrt
 import cadquery as cq
 import numpy as np
 from .model.node_matrix import N
+from .tensegrity_node import Node
 from .tensegrity_bar import Bar
 
 class TensegrityStructure:
@@ -30,7 +31,7 @@ class TensegrityStructure:
     q = None
     R = None
     r = None
-    node_r = None
+    cutaway = None
     simplified = False
     structure = cq.Assembly()
 
@@ -59,10 +60,7 @@ class TensegrityStructure:
         self.q = q
         self.R = R
         self.r = r
-
-        # Derived sizes for nodes, bars and strings
-        self.node_r = r / 50.0 # The radius of the connection nodes
-
+        self.cutaway = cutaway
         self.simplified = simplified
 
     def get(self):
@@ -80,8 +78,8 @@ class TensegrityStructure:
             for k in range(0, self.p):
                 # Add the current node
                 N_1_2 = N(i, k, self.R, self.r, self.p, self.q).get()
-                self.structure.add(self.node(N_1_2[0], 1), color=cq.Color(1, 1, 1, 1))
-                self.structure.add(self.node(N_1_2[0], 2), color=cq.Color(1, 1, 1, 1))
+                self.structure.add(Node(N_1_2[0], 1, self.r, simplified=True).get(), color=cq.Color(1, 1, 1, 1))
+                self.structure.add(Node(N_1_2[0], 2, self.r, simplified=True).get(), color=cq.Color(1, 1, 1, 1))
 
                 # Get the indexes of the next and previous strips
                 i_adj = i + 1
@@ -105,16 +103,3 @@ class TensegrityStructure:
                 self.structure.add(Bar(N_1_2[0], N_1_2_minus[0], 2, self.r).get(), color=cq.Color(0, 0, 1))
 
         return self.structure
-
-    """
-    Returns a reference representation of a connectivity node.
-    """
-    def node(self, pos, l):
-        new_node = None
-
-        if self.simplified:
-            new_node = cq.Workplane().box(self.node_r * 2.0, self.node_r * 2.0, self.node_r * 2.0)
-        else:
-            new_node = cq.Workplane().sphere(self.node_r)
-        
-        return new_node.translate((pos[0][l - 1], pos[1][l - 1], pos[2][l - 1]))

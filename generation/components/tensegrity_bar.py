@@ -38,8 +38,6 @@ class Bar:
             A matrix containing both ar ends for an ik unit of the DHT torus structure.
         l : int
             Selects which DHT ik unit bar to work with (1 or 2).
-        R : float
-            The radius from the center of the station to the center line of the habitat torus.
         r : float
             The radius of the pressurized habitat torus.
         """
@@ -53,7 +51,7 @@ class Bar:
 
     def get(self):
         """
-        Constructs the CadQuery assembly the represents a tensegrity bar with the correct
+        Constructs the CadQuery object the represents a tensegrity bar with the correct
         location, orientation and length.
 
         Parameters
