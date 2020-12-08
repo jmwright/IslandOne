@@ -13,8 +13,10 @@ class GroundSurfaceDeck:
         self.r = r
 
         # Calculate the plane dimesions based on the pressure hull radius
-        # self.plane_width = r * 2.0
-        self.plane_thickness = r / 10.0
+        self.plane_thickness = r * 0.07 # 0.07 is taken as a proportion from Figure 4.3, pg 24 of Growth Adapted Tensegrity Structure
+
+        # Position ground deck so that basement deck will have the proper headroom
+        self.g_deck_center_line = (self.R + self.r) - 0.5 - 2.7 - self.plane_thickness
 
         # Calculate the width of the ground surface deck based on the radius (the ground deck is not at R)
         # 0.93 is a correction factor that is used to make sure the deck does not interfere with any of the
@@ -29,6 +31,6 @@ class GroundSurfaceDeck:
 
     def get(self):
         return (cq.Workplane("YZ")
-                  .center(-self.R + (self.r / 3.0), 0)
+                  .center(-self.g_deck_center_line, 0)
                   .rect(self.plane_thickness, self.plane_width)
-                  .revolve(self.rev_angle, [self.R - (self.r / 3.0), 0], [self.R - (self.r / 3.0), 1], clean=True))
+                  .revolve(self.rev_angle, [self.g_deck_center_line, 0], [self.g_deck_center_line, 1], clean=True))
