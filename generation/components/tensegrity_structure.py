@@ -4,6 +4,7 @@ import numpy as np
 from .model.node_matrix import N
 from .tensegrity_node import Node
 from .tensegrity_bar import Bar
+from .tensegrity_string import TString
 
 class TensegrityStructure:
     """
@@ -101,5 +102,8 @@ class TensegrityStructure:
                 # Create a bar between the n1 node of the current unit to the n1 node of the i+1,k+1 unit
                 self.structure.add(Bar(N_1_2[0], N_1_2_plus[0], 1, self.r).get(), color=cq.Color(0, 0, 1))
                 self.structure.add(Bar(N_1_2[0], N_1_2_minus[0], 2, self.r).get(), color=cq.Color(0, 0, 1))
+
+                # Add the strings between the appropriate nodes
+                self.structure.add(TString(N_1_2[0], N_1_2[0], 1, self.r).get(), color=cq.Color(1, 0, 0))
 
         return self.structure

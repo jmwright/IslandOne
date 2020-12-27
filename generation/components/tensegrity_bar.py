@@ -12,7 +12,7 @@ class Bar:
     start : numpy.array
         A matrix containing both bar starts for an ik unit of the DHT torus structure.
     end : numpy.array
-        A matrix containing both ar ends for an ik unit of the DHT torus structure.
+        A matrix containing both bar ends for an ik unit of the DHT torus structure.
     l : int
         Selects which DHT ik unit bar to work with (1 or 2).
     """
@@ -35,7 +35,7 @@ class Bar:
         start : numpy.array
             A matrix containing both bar starts for an ik unit of the DHT torus structure.
         end : numpy.array
-            A matrix containing both ar ends for an ik unit of the DHT torus structure.
+            A matrix containing both bar ends for an ik unit of the DHT torus structure.
         l : int
             Selects which DHT ik unit bar to work with (1 or 2).
         r : float
