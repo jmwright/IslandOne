@@ -1,7 +1,7 @@
 from math import sqrt
 import cadquery as cq
 
-class Bar:
+class TBar:
     """
     Single bar of the tensegrity structure that makes up the skeletal frame of the toroidal
     pressure hull. Each bar has a start point (origin) and an endpoint. The direction on length 
