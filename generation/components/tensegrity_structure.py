@@ -66,7 +66,7 @@ class TensegrityStructure:
 
     def get(self):
         """
-        Constructs the CadQuery assembly the represents the tensegrity structure of the toroidal  
+        Constructs the CadQuery assembly the represents the tensegrity structure of the toroidal
         pressure hull.
 
         Parameters
@@ -98,12 +98,15 @@ class TensegrityStructure:
                 # Find the adjacent bar node connections for the current ik unit
                 N_1_2_plus = N(i_adj, k_adj, self.R, self.r, self.p, self.q).get()
                 N_1_2_minus = N(i_adj, k_m_adj, self.R, self.r, self.p, self.q).get()
+                N_ip_k = N(i_adj, k, self.R, self.r, self.p, self.q).get()
 
                 # Create a bar between the n1 node of the current unit to the n1 node of the i+1,k+1 unit
                 self.structure.add(TBar(N_1_2[0], N_1_2_plus[0], 1, self.r).get(), color=cq.Color(0, 0, 1))
                 self.structure.add(TBar(N_1_2[0], N_1_2_minus[0], 2, self.r).get(), color=cq.Color(0, 0, 1))
 
                 # Add the strings between the appropriate nodes
-                self.structure.add(TString(N_1_2[0], N_1_2[0], 1, self.r).get(), color=cq.Color(1, 0, 0))
+                self.structure.add(TString(N_1_2[0], N_1_2[0], 1, 2, self.r).get(), color=cq.Color(1, 0, 0))
+                self.structure.add(TString(N_1_2[0], N_ip_k[0], 2, 1, self.r).get(), color=cq.Color(1, 0, 0))
+                self.structure.add(TString(N_1_2[0], N_ip_k[0], 1, 1, self.r).get(), color=cq.Color(1, 0, 0))
 
         return self.structure
