@@ -16,10 +16,12 @@ There are two planned sections of the project at this time, with a third being a
 ## Current State
 
 Currently only the generated CAD for the tensegrity structure exists, although the 3D environment is still planned. The tensegrity structure as pictured above includes the following components:
+
 1. Tensegrity bars - The blue components are tensegrity bars, 2 per ik unit.
 2. Tensegrity strings - The red components are tensegrity strings, 8 per ik unit.
-3. Pressure hull - The current hull is a simple hollow torus that is a stand-in for the final growth-capable pressure hull.
-4. Ground deck - This is the main deck that the inhabitants of the island would live and work on. Inhabitants stand on the surface facing the center of the torus, and the rotation of the torus about its central axis simulates gravity.
+3. Tensegrity nodes - The small white spheres are the nodes that the bars and strings are connected to, modeled in the research as frictionless ball joints.
+4. Pressure hull - The current hull is a simple hollow torus that is a stand-in for the final growth-capable pressure hull.
+5. Ground deck - This is the main deck that the inhabitants of the island would live and work on. Inhabitants stand on the surface facing the center of the torus, and the rotation of the torus about its central axis simulates gravity.
 
 ## Recommended Reading
 
